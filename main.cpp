@@ -11,8 +11,19 @@ const int SCREEN_HEIGHT = 480;
 //Initializing functions
 bool init();
 bool drawMainMenu();
+void drawMainMenuBackground();
+void drawMainMenuOptionsBackground();
+void drawMainMenuBackgroundImage();
 SDL_Texture* loadTexture(const std::string &path);
+void drawMainMenuOptions();
 void close();
+
+enum CurrentMenu
+{
+	MAIN_MENU,
+	CHARACTER_MENU,
+	COMBAT_MENU,
+};
 
 
 //Main window
@@ -27,19 +38,23 @@ SDL_Texture* mainMenuTexture;
 
 int main(int argc, char* args[])
 {
+	CurrentMenu currentMenu = MAIN_MENU;
 	init();
 	SDL_Event event;
 	mainMenuTexture = loadTexture("images/MainMenu.bmp");
 	while (true)
 	{
-		drawMainMenu();
-		SDL_RenderPresent(gRenderer);
-		if (SDL_PollEvent(&event))
+		if (currentMenu == MAIN_MENU)
 		{
-			if (event.type == SDL_QUIT)
+			drawMainMenu();
+			SDL_RenderPresent(gRenderer);
+			if (SDL_PollEvent(&event))
 			{
-				close();
-				return 0;
+				if (event.type == SDL_QUIT)
+				{
+					close();
+					return 0;
+				}
 			}
 		}
 
@@ -98,6 +113,20 @@ bool init()
 
 bool drawMainMenu()
 {
+	drawMainMenuBackground();
+
+	//Create the bar behind the menu options
+	drawMainMenuOptionsBackground();
+
+	drawMainMenuBackgroundImage();
+
+	drawMainMenuOptions();
+
+	return true;
+}
+
+void drawMainMenuBackground()
+{
 	SDL_Rect background;
 	background.x = 0;
 	background.y = 0;
@@ -108,7 +137,11 @@ bool drawMainMenu()
 
 	SDL_RenderFillRect(gRenderer, &background);
 
-	//Create and draw the menu background
+	return;
+}
+
+void drawMainMenuOptionsBackground()
+{
 	SDL_Rect menuOptionsColumnBackground;
 	menuOptionsColumnBackground.x = 600;
 	menuOptionsColumnBackground.y = 0;
@@ -118,6 +151,11 @@ bool drawMainMenu()
 	SDL_SetRenderDrawColor(gRenderer, 100, 0, 0, 255);
 	SDL_RenderFillRect(gRenderer, &menuOptionsColumnBackground);
 
+	return;
+}
+
+void drawMainMenuBackgroundImage()
+{
 	SDL_Rect mainMenuPos;
 	mainMenuPos.x = 0;
 	mainMenuPos.y = 0;
@@ -125,7 +163,7 @@ bool drawMainMenu()
 	mainMenuPos.h = 480;
 	SDL_RenderCopy(gRenderer, mainMenuTexture, NULL, &mainMenuPos);
 
-	return true;
+	return;
 }
 
 SDL_Texture* loadTexture(const std::string &path)
@@ -138,6 +176,20 @@ SDL_Texture* loadTexture(const std::string &path)
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(gRenderer, surface);
 	SDL_FreeSurface(surface);
 	return texture;
+}
+
+void drawMainMenuOptions()
+{
+	SDL_Rect mainMenuNewCharacterOption;
+	mainMenuNewCharacterOption.x = 520;
+	mainMenuNewCharacterOption.y = 50;
+	mainMenuNewCharacterOption.w = SCREEN_WIDTH - 530;
+	mainMenuNewCharacterOption.h = 40;
+
+	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+	SDL_RenderFillRect(gRenderer, &mainMenuNewCharacterOption);
+
+	return;
 }
 
 void close()
@@ -155,3 +207,4 @@ void close()
 	SDL_Quit();
 	return;
 }
+
