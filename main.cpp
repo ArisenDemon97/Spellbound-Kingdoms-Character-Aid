@@ -180,14 +180,27 @@ SDL_Texture* loadTexture(const std::string &path)
 
 void drawMainMenuOptions()
 {
-	SDL_Rect mainMenuNewCharacterOption;
-	mainMenuNewCharacterOption.x = 520;
-	mainMenuNewCharacterOption.y = 50;
-	mainMenuNewCharacterOption.w = SCREEN_WIDTH - 530;
-	mainMenuNewCharacterOption.h = 40;
+	int menuOptionsHeight = 40;
+	int menuOptionsXLoc = 520;
+	int menuOptionsWidth = SCREEN_WIDTH - 530;
 
-	SDL_SetRenderDrawColor(gRenderer, 0, 0, 0, 255);
+	SDL_Rect mainMenuNewCharacterOption;
+	mainMenuNewCharacterOption.x = menuOptionsXLoc;
+	mainMenuNewCharacterOption.y = 50;
+	mainMenuNewCharacterOption.w = menuOptionsWidth;
+	mainMenuNewCharacterOption.h = menuOptionsHeight;
+
+	SDL_Rect mainMenuLoadCharacterOption;
+	mainMenuLoadCharacterOption.x = menuOptionsXLoc;
+	mainMenuLoadCharacterOption.y = 120;
+	mainMenuLoadCharacterOption.w = menuOptionsWidth;
+	mainMenuLoadCharacterOption.h = menuOptionsHeight;
+
+	SDL_SetRenderDrawColor(gRenderer, 220, 220, 255, 255);
 	SDL_RenderFillRect(gRenderer, &mainMenuNewCharacterOption);
+	SDL_RenderFillRect(gRenderer, &mainMenuLoadCharacterOption);
+
+
 
 	return;
 }
