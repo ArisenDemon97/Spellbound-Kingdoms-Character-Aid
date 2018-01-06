@@ -4,20 +4,18 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-#include <vector>
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
 //Initializing functions
-bool init();
+bool init(); //initializes SDL and TTF
 bool drawMainMenu();
-void drawMainMenuBackground();
-void drawMainMenuOptionsBackground();
+void drawMainMenuBackground(); //This is the background if there's no image
+void drawMainMenuOptionsBackground(); //This is the red bar on the right
 void drawMainMenuBackgroundImage();
 SDL_Texture* loadTexture(const std::string &path);
-void drawMainMenuOptions();
 SDL_Texture* loadMainMenuTitleText();
 SDL_Texture* loadText(const std::string &input);
 void drawMainMenuText();
@@ -27,8 +25,8 @@ enum CurrentMenu
 {
 	MAIN_MENU,
 	CHARACTER_MENU,
-	OPTIONS_MENU,
 	COMBAT_MENU,
+	SETTINGS_MENU,
 };
 
 
@@ -53,7 +51,7 @@ TTF_Font* mainFont;
 SDL_Color white = { 255, 255, 255, 255 };
 SDL_Color black = { 0, 0, 0, 255 };
 
-std::vector<int> drawRects = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+bool isRunning = true;
 
 int main(int argc, char* args[])
 {
@@ -63,11 +61,79 @@ int main(int argc, char* args[])
 	mainFont = TTF_OpenFont("blackchancery.regular.ttf", 36);
 	SDL_Event event;
 	mainMenuTexture = loadTexture("images/MainMenu.bmp");
-	
-	if (currentMenu == MAIN_MENU)
+	while (isRunning == true)
+	{
+		if (currentMenu == MAIN_MENU)
 		{
+			SDL_RenderClear(gRenderer);
 			drawMainMenu();
-			while (true)
+			while (currentMenu == MAIN_MENU)
+			{
+				if (SDL_PollEvent(&event))
+				{
+					if (event.type == SDL_QUIT)
+					{
+						close();
+						return 0;
+					}
+					else if (event.type == SDL_MOUSEBUTTONDOWN)
+					{
+						int mouseX, mouseY;
+						SDL_GetMouseState(&mouseX, &mouseY);
+						std::cout << "Click!" << " " << mouseX << " " << mouseY << "\n";
+
+						if (mouseX >= 480 && mouseX <= 630 && mouseY >= 45 && mouseY <= 95)
+						{
+							//New Character Hitbox
+							std::cout << "New Character\n";
+							currentMenu = CHARACTER_MENU;
+						}
+						else if (mouseX >= 485 && mouseX <= 630 && mouseY >= 115 && mouseY <= 165)
+						{
+							//Load Character Hitbox
+							std::cout << "Load Character\n";
+							currentMenu = CHARACTER_MENU;
+						}
+						else if (mouseX >= 500 && mouseX <= 630 && mouseY >= 190 && mouseY <= 230)
+						{
+							//Combat Hitbox
+							std::cout << "Combat\n";
+							currentMenu = COMBAT_MENU;
+						}
+						else if (mouseX >= 505 && mouseX <= 630 && mouseY >= 260 && mouseY <= 300)
+						{
+							//Settings Hitbox
+							std::cout << "Settings\n";
+							currentMenu = SETTINGS_MENU;
+						}
+						else if (mouseX >= 520 && mouseX <= 630 && mouseY >= 330 && mouseY <= 360)
+						{
+							//Exit Hitbox
+							close();
+							return 0;
+						}
+					}
+				}
+			}
+		}
+
+		if (currentMenu == CHARACTER_MENU)
+		{
+			SDL_RenderClear(gRenderer);
+			SDL_Texture* characterText = loadText("CHARACTER");
+			SDL_Rect characterLoc;
+			characterLoc.x = 30;
+			characterLoc.y = 30;
+			characterLoc.w = 600;
+			characterLoc.h = 300;
+
+			SDL_RenderCopy(gRenderer, characterText, nullptr, &characterLoc);
+			SDL_RenderPresent(gRenderer);
+
+			SDL_DestroyTexture(characterText);
+			characterText = NULL;
+
+			while (currentMenu == CHARACTER_MENU)
 			{
 				if (SDL_PollEvent(&event))
 				{
@@ -78,21 +144,93 @@ int main(int argc, char* args[])
 					}
 					if (event.type == SDL_MOUSEBUTTONDOWN)
 					{
-						int mouseX, mouseY;
-						SDL_GetMouseState(&mouseX, &mouseY);
-						std::cout << "Click!" << " " << mouseX << " " << mouseY << "\n";
-						if (mouseX >= 500 && mouseX <= 630 && mouseY >= 330 && mouseY <= 370)
-						{
-							close();
-							return 0;
-						}
+						currentMenu = MAIN_MENU;
 					}
 				}
 			}
 		}
 
+		if (currentMenu == COMBAT_MENU)
+		{
+			SDL_RenderClear(gRenderer);
+			SDL_Texture* combatText = loadText("COMBAT");
+			SDL_Rect combatLoc;
+			combatLoc.x = 30;
+			combatLoc.y = 30;
+			combatLoc.w = 600;
+			combatLoc.h = 300;
+
+			SDL_RenderCopy(gRenderer, combatText, nullptr, &combatLoc);
+			SDL_RenderPresent(gRenderer);
+
+			SDL_DestroyTexture(combatText);
+			combatText = NULL;
+
+			while (currentMenu == COMBAT_MENU)
+			{
+				if (SDL_PollEvent(&event))
+				{
+					if (event.type == SDL_QUIT)
+					{
+						close();
+						return 0;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN)
+					{
+						currentMenu = MAIN_MENU;
+					}
+				}
+			}
+		}
+
+		if (currentMenu == SETTINGS_MENU)
+		{
+			SDL_RenderClear(gRenderer);
+			SDL_Texture* settingsText = loadText("SETTINGS");
+			SDL_Rect settingsLoc;
+			settingsLoc.x = 30;
+			settingsLoc.y = 30;
+			settingsLoc.w = 600;
+			settingsLoc.h = 300;
+
+			SDL_RenderCopy(gRenderer, settingsText, nullptr, &settingsLoc);
+			SDL_RenderPresent(gRenderer);
+
+			SDL_DestroyTexture(settingsText);
+			settingsText = NULL;
+
+			while (currentMenu == SETTINGS_MENU)
+			{
+				if (SDL_PollEvent(&event))
+				{
+					if (event.type == SDL_QUIT)
+					{
+						close();
+						return 0;
+					}
+					if (event.type == SDL_MOUSEBUTTONDOWN)
+					{
+						currentMenu = MAIN_MENU;
+					}
+				}
+			}
+		}
+	}
+
 	return 0;
 }
+
+/*
+END OF MAIN FUNCTION
+
+
+
+
+
+
+
+BEGINNING OF OTHER FUNCTIONS
+*/
 
 bool init()
 {
@@ -162,7 +300,7 @@ bool drawMainMenu()
 
 	drawMainMenuBackgroundImage();
 
-	drawMainMenuOptions();
+	drawMainMenuText();
 
 	SDL_RenderPresent(gRenderer);
 
@@ -222,56 +360,6 @@ SDL_Texture* loadTexture(const std::string &path)
 	return texture;
 }
 
-void drawMainMenuOptions()
-{
-	/*
-	int menuOptionsHeight = 40;
-	int menuOptionsXLoc = 500;
-	int menuOptionsWidth = SCREEN_WIDTH - (menuOptionsXLoc + 10);
-
-	SDL_Rect mainMenuNewCharacterOption;
-	mainMenuNewCharacterOption.x = menuOptionsXLoc;
-	mainMenuNewCharacterOption.y = 50;
-	mainMenuNewCharacterOption.w = menuOptionsWidth;
-	mainMenuNewCharacterOption.h = menuOptionsHeight;
-
-	SDL_Rect mainMenuLoadCharacterOption;
-	mainMenuLoadCharacterOption.x = menuOptionsXLoc;
-	mainMenuLoadCharacterOption.y = 120;
-	mainMenuLoadCharacterOption.w = menuOptionsWidth;
-	mainMenuLoadCharacterOption.h = menuOptionsHeight;
-
-	SDL_Rect mainMenuCombatOption;
-	mainMenuCombatOption.x = menuOptionsXLoc;
-	mainMenuCombatOption.y = 190;
-	mainMenuCombatOption.w = menuOptionsWidth;
-	mainMenuCombatOption.h = menuOptionsHeight;
-
-	SDL_Rect mainMenuSettingsOption;
-	mainMenuSettingsOption.x = menuOptionsXLoc;
-	mainMenuSettingsOption.y = 260;
-	mainMenuSettingsOption.w = menuOptionsWidth;
-	mainMenuSettingsOption.h = menuOptionsHeight;
-
-	SDL_Rect mainMenuExitOption;
-	mainMenuExitOption.x = menuOptionsXLoc;
-	mainMenuExitOption.y = 330;
-	mainMenuExitOption.w = menuOptionsWidth;
-	mainMenuExitOption.h = menuOptionsHeight;
-
-
-	SDL_SetRenderDrawColor(gRenderer, 40, 0, 0, 255);
-	SDL_RenderFillRect(gRenderer, &mainMenuNewCharacterOption);
-	SDL_RenderFillRect(gRenderer, &mainMenuLoadCharacterOption);
-	SDL_RenderFillRect(gRenderer, &mainMenuCombatOption);
-	SDL_RenderFillRect(gRenderer, &mainMenuSettingsOption);
-	SDL_RenderFillRect(gRenderer, &mainMenuExitOption);
-	*/
-	drawMainMenuText();
-
-	return;
-}
-
 SDL_Texture* loadMainMenuTitleText()
 {
 	text = TTF_RenderText_Blended(titleFont, "Spellbound Kingdoms Character Aid", white);
@@ -310,16 +398,16 @@ void drawMainMenuText()
 	mainMenuTitle.h = 60;
 
 	SDL_Rect newCharacterOption;
-	newCharacterOption.x = textOptionsXLoc;
-	newCharacterOption.y = 50;
-	newCharacterOption.w = textOptionsWidth;
-	newCharacterOption.h = textOptionsHeight;
+	newCharacterOption.x = textOptionsXLoc - 10;
+	newCharacterOption.y = 50 - 5;
+	newCharacterOption.w = textOptionsWidth + 10;
+	newCharacterOption.h = textOptionsHeight + 10;
 
 	SDL_Rect loadCharacterOption;
-	loadCharacterOption.x = textOptionsXLoc;
-	loadCharacterOption.y = 120;
-	loadCharacterOption.w = textOptionsWidth;
-	loadCharacterOption.h = textOptionsHeight;
+	loadCharacterOption.x = textOptionsXLoc - 15;
+	loadCharacterOption.y = 120 - 5;
+	loadCharacterOption.w = textOptionsWidth + 15;
+	loadCharacterOption.h = textOptionsHeight + 10;
 
 	SDL_Rect combatOption;
 	combatOption.x = textOptionsXLoc;
@@ -334,7 +422,7 @@ void drawMainMenuText()
 	settingsOption.h = textOptionsHeight;
 
 	SDL_Rect exitOption;
-	exitOption.x = textOptionsXLoc + 10;
+	exitOption.x = textOptionsXLoc + 20;
 	exitOption.y = 330;
 	exitOption.w = textOptionsWidth - 20;
 	exitOption.h = textOptionsHeight;
@@ -379,6 +467,8 @@ void close()
 	gWindow = NULL;
 
 	TTF_CloseFont(titleFont);
+
+	isRunning = false;
 
 	SDL_Quit();
 	return;
