@@ -101,6 +101,37 @@ private:
 	}
 };
 
+class Media
+{
+public:
+	SDL_Texture * loadTexture(const std::string &path, Window &window)
+	{
+		SDL_Surface* surface = SDL_LoadBMP(path.c_str());
+		if (surface == nullptr)
+		{
+			std::cout << "SDL Error: " << SDL_GetError << "\n";
+		}
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(window.mRenderer, surface);
+		SDL_FreeSurface(surface);
+		return texture;
+	}
+	SDL_Texture* loadTitleText(const std::string &input, Window &window)
+	{
+		text = TTF_RenderText_Blended(titleFont, input.c_str(), white);
+		SDL_Texture* titleTexture = SDL_CreateTextureFromSurface(window.mRenderer, text);
+		SDL_FreeSurface(text);
+		text = nullptr;
+		return titleTexture;
+	}
+private:
+	SDL_Color white = { 255, 255, 255, 255 };
+	SDL_Color black = { 255, 255, 255, 255 };
+
+	SDL_Surface * text;
+	TTF_Font * titleFont = TTF_OpenFont("blackchancery.regular.ttf", 48);
+	TTF_Font * mainFont = TTF_OpenFont("blackchancery.regular.ttf", 36);
+};
+
 class Menu
 {
 public:
@@ -117,6 +148,54 @@ public:
 		currentmenu = MAIN_MENU;
 		return true;
 	}
+
+	class MainMenu
+	{
+	public:
+		bool loadMainMenu(Window &window, Media &media)
+		{
+			mainMenuTexture = media.loadTexture("images/MainMenu.bmp", window);
+			mainMenuTitleText = media.loadTitleText("Spellbound Kingdoms Character Aid", window);
+			return true;
+		}
+		bool drawMainMenu(Window &window, Media media)
+		{
+			drawMainMenuBackgroundImage(window, media);
+			drawMainMenuTitleText(window, media);
+			SDL_RenderPresent(window.mRenderer);
+			return true;
+		}
+	private:
+		SDL_Texture * mainMenuTexture;
+		SDL_Texture * mainMenuTitleText;
+
+		void drawMainMenuBackgroundImage(Window &window, Media &media)
+		{
+			SDL_Rect mainMenuPos;
+			mainMenuPos.x = 0;
+			mainMenuPos.y = 0;
+			mainMenuPos.w = 600;
+			mainMenuPos.h = 480;
+			SDL_RenderCopy(window.mRenderer, mainMenuTexture, NULL, &mainMenuPos);
+
+			return;
+		}
+
+		void drawMainMenuTitleText(Window &window, Media &media)
+		{
+			SDL_Rect mainMenuTitle;
+			mainMenuTitle.x = 20;
+			mainMenuTitle.y = 10;
+			mainMenuTitle.w = 400;
+			mainMenuTitle.h = 60;
+			SDL_RenderCopy(window.mRenderer, mainMenuTitleText, nullptr, &mainMenuTitle);
+		}
+	};
+	
+private:
+	
+
+	
 };
 
 int main(int argc, char* args[])
@@ -127,11 +206,31 @@ int main(int argc, char* args[])
 	Menu menu;
 	menu.init();
 
+
+
+	SDL_RenderPresent(window.mRenderer);
+
 	SDL_Event event;
 	while (window.isRunning == true)
 	{
 		if (menu.currentmenu == menu.MAIN_MENU)
 		{
+			Media media;
+			Menu::MainMenu mainMenu;
+			mainMenu.loadMainMenu(window, media);
+			while (true)
+			{
+				SDL_RenderClear(window.mRenderer);
+				mainMenu.drawMainMenu(window, media);
+				if (SDL_PollEvent(&event))
+				{
+					if (event.type == SDL_QUIT)
+					{
+						window.close();
+						return 0;
+					}
+				}
+			}
 			//TODO: make menu classes as well as media loader. Use  version 0.2.2 on Github to keep track of what's missing
 		}
 		if (SDL_PollEvent(&event))
@@ -143,4 +242,5 @@ int main(int argc, char* args[])
 			}
 		}
 	}
+	return 0;
 }
