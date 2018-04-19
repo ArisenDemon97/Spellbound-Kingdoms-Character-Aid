@@ -7,8 +7,8 @@ As of this moment, it's being made with SDL2.0, and is in such an early state, t
 
 
 
-Current build: Opens a window that you can close. Window has background image and title text. (does require an images folder with "MainMenu.bmp" inside)
-Hopeful next build: Load a red bar on the right, as well as some menu options. May not compile properly without creating an images folder (in the same directory as the cpp file) and putting a picture named MainMenu.bmp into said folder.
+Current build: Opens a window that you can close. Window has background image and title text, as well as menu optinos. (does require an images folder with "MainMenu.bmp" inside)
+Hopeful next build: Load a red bar behind the menu options, as well as menu option selection detection. May not compile properly without creating an images folder (in the same directory as the cpp file) and putting a picture named MainMenu.bmp into said folder.
 I have my own image that I'm using as the main menu, but seeing as it's art from the official Spellbound Kingdoms pdf, I will not be uploading it along with the rest of the source code (For those interested, and that have the pdf, check page 5, just before it starts Chapter One. It should be an image of several people rappelling on a castle wall).
 
 Overall it SHOULD be cross-platform, seeing as I'm using SDL2, but I'm not entirely certain about this. If you want to test it for me as I develop it, and tell me what's going on, or make suggestions to improve the portability, I'd appreciate it.
@@ -16,4 +16,4 @@ Overall it SHOULD be cross-platform, seeing as I'm using SDL2, but I'm not entir
 Finally, thank you for checking out my app. I hope it ends up being useful to lots of people!
 
 NOTE: I took a short hiatus from developing this, but I'm still going to be developing it, starting with refactoring it to implement OOP design. As it was, it'll work, but was a mess to work on/with. Once I've finished refactoring it, it should work the same, but be easier to develop.
-Refactoring in progress.
+Refactoring almost complete, but I could have done a lot more to ensure object oriented design. At this point, it's probably better for me to just accept the mistakes, make it as clean as I can while staying consistent, and make sure it works properly before I release it and leave it.
